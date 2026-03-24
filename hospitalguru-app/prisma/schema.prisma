@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── INQUIRY ──────────────────────────────────────────────────────────────────
+
+model Inquiry {
+  id             String   @id @default(cuid())
+  inquiryNumber  String   @unique
+  guestName      String?
+  guestEmail     String?
+  guestPhone     String?
+  guestCountry   String?
+  guestLanguage  String?  @default("en")
+  treatmentName  String?
+  medicalSummary String?
+  urgency        String   @default("routine")
+  source         String   @default("web_form")
+  status         String   @default("new")
+  internalNotes  String?
+  chatContext    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

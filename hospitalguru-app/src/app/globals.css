@@ -1,0 +1,187 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* ─── Font variables ────────────────────────────────────────────────────────── */
+@theme inline {
+  /* Wire Inter (loaded in layout.tsx) into all Tailwind font utilities */
+  --font-sans:    var(--font-inter);
+  --font-heading: var(--font-inter);
+  --font-mono:    var(--font-geist-mono);
+
+  /* Shadcn design tokens */
+  --color-background:             var(--background);
+  --color-foreground:             var(--foreground);
+  --color-card:                   var(--card);
+  --color-card-foreground:        var(--card-foreground);
+  --color-popover:                var(--popover);
+  --color-popover-foreground:     var(--popover-foreground);
+  --color-primary:                var(--primary);
+  --color-primary-foreground:     var(--primary-foreground);
+  --color-secondary:              var(--secondary);
+  --color-secondary-foreground:   var(--secondary-foreground);
+  --color-muted:                  var(--muted);
+  --color-muted-foreground:       var(--muted-foreground);
+  --color-accent:                 var(--accent);
+  --color-accent-foreground:      var(--accent-foreground);
+  --color-destructive:            var(--destructive);
+  --color-border:                 var(--border);
+  --color-input:                  var(--input);
+  --color-ring:                   var(--ring);
+
+  --radius-sm:  calc(var(--radius) * 0.6);
+  --radius-md:  calc(var(--radius) * 0.8);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* ─── Design tokens (light) ─────────────────────────────────────────────────── */
+:root {
+  --background:           oklch(1 0 0);
+  --foreground:           oklch(0.15 0 0);
+  --card:                 oklch(1 0 0);
+  --card-foreground:      oklch(0.15 0 0);
+  --popover:              oklch(1 0 0);
+  --popover-foreground:   oklch(0.15 0 0);
+  --primary:              oklch(0.21 0 0);
+  --primary-foreground:   oklch(0.985 0 0);
+  --secondary:            oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.21 0 0);
+  --muted:                oklch(0.97 0 0);
+  --muted-foreground:     oklch(0.52 0 0);
+  --accent:               oklch(0.97 0 0);
+  --accent-foreground:    oklch(0.21 0 0);
+  --destructive:          oklch(0.577 0.245 27.3);
+  --border:               oklch(0.92 0 0);
+  --input:                oklch(0.92 0 0);
+  --ring:                 oklch(0.71 0 0);
+  --radius:               0.625rem;
+}
+
+/* ─── Design tokens (dark) ──────────────────────────────────────────────────── */
+.dark {
+  --background:           oklch(0.145 0 0);
+  --foreground:           oklch(0.985 0 0);
+  --card:                 oklch(0.21 0 0);
+  --card-foreground:      oklch(0.985 0 0);
+  --popover:              oklch(0.21 0 0);
+  --popover-foreground:   oklch(0.985 0 0);
+  --primary:              oklch(0.922 0 0);
+  --primary-foreground:   oklch(0.21 0 0);
+  --secondary:            oklch(0.27 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted:                oklch(0.27 0 0);
+  --muted-foreground:     oklch(0.71 0 0);
+  --accent:               oklch(0.27 0 0);
+  --accent-foreground:    oklch(0.985 0 0);
+  --destructive:          oklch(0.704 0.191 22.2);
+  --border:               oklch(1 0 0 / 10%);
+  --input:                oklch(1 0 0 / 15%);
+  --ring:                 oklch(0.556 0 0);
+}
+
+@custom-variant dark (&:is(.dark *));
+
+/* ─── Base typography ────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply font-sans;
+    scroll-behavior: smooth;
+    /* Improve rendering on Windows (not just macOS) */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    /* Comfortable body text defaults */
+    font-size: 1rem;
+    line-height: 1.625; /* leading-relaxed */
+    font-weight: 400;
+  }
+
+  /* Heading scale — tight tracking, strong weight, good line-height */
+  h1 {
+    @apply font-heading;
+    font-size: clamp(2rem, 5vw, 3.75rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+  }
+
+  h2 {
+    @apply font-heading;
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  h3 {
+    @apply font-heading;
+    font-size: clamp(1.125rem, 2vw, 1.375rem);
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  h4, h5, h6 {
+    @apply font-heading;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  p {
+    line-height: 1.7;
+  }
+
+  /* Cyrillic: avoid tight tracking on uppercase labels */
+  :lang(ru),
+  :lang(kk),
+  :lang(uk) {
+    letter-spacing: 0; /* reset — tight tracking harms Cyrillic */
+  }
+}
+
+/* ─── Utility overrides ─────────────────────────────────────────────────────── */
+/* Section label pill (e.g. "Partner Hospitals") */
+.section-label {
+  @apply inline-flex items-center text-xs font-semibold px-3 py-1 rounded-full;
+  letter-spacing: 0.06em;
+}
+
+/* Cyrillic-safe label: no forced uppercase tracking */
+.label-cyr {
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+/* Smooth scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(0.85 0 0) transparent;
+}
+
+/* Line clamp utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
