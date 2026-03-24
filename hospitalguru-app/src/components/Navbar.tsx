@@ -3,8 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X, Phone, ChevronDown, Globe } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
-// Button used for ghost sign-in, buttonVariants used on Link CTAs
+import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage, type Lang } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
@@ -105,10 +104,6 @@ export default function Navbar() {
                 </>
               )}
             </div>
-
-            <Button variant="ghost" size="sm" className="hidden sm:flex text-gray-600 font-medium">
-              {t("nav_signin")}
-            </Button>
 
             <Link
               href="#inquiry"

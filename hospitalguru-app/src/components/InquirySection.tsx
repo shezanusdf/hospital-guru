@@ -5,6 +5,7 @@ import { Send, Upload, CheckCircle, FileText, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { WhatsAppIcon, TelegramIcon } from "@/components/icons";
 
 const cisCountries = [
   "Russia 🇷🇺", "Kazakhstan 🇰🇿", "Ukraine 🇺🇦", "Belarus 🇧🇾",
@@ -95,13 +96,13 @@ export default function InquirySection() {
             </ul>
 
             <div className="flex items-center gap-4">
-              <a href="https://wa.me/918800791204"
+              <a href="https://wa.me/918800791204" target="_blank" rel="noopener noreferrer"
                 className="flex items-center gap-2 bg-green-500 hover:bg-green-400 text-white font-semibold px-5 py-2.5 rounded-full transition-colors text-sm">
-                💬 WhatsApp
+                <WhatsAppIcon size={16} /> WhatsApp
               </a>
-              <a href="https://t.me/hospitalguru"
+              <a href="https://t.me/hospitalguru" target="_blank" rel="noopener noreferrer"
                 className="flex items-center gap-2 bg-blue-500 hover:bg-blue-400 text-white font-semibold px-5 py-2.5 rounded-full transition-colors text-sm">
-                ✈️ Telegram
+                <TelegramIcon size={16} /> Telegram
               </a>
             </div>
           </div>

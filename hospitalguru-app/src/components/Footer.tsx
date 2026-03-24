@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Phone, Mail, MapPin } from "lucide-react";
+import { WhatsAppIcon, TelegramIcon } from "@/components/icons";
 
 const footerLinks = {
   "For Patients": [
@@ -96,15 +97,14 @@ export default function Footer() {
 
             {/* Social */}
             <div className="flex gap-3 mt-5">
-              {["💬 WhatsApp", "✈️ Telegram", "📘 Facebook"].map((s) => (
-                <a
-                  key={s}
-                  href="#"
-                  className="text-[11px] text-gray-400 hover:text-white bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-full transition-colors"
-                >
-                  {s}
-                </a>
-              ))}
+              <a href="https://wa.me/918800791204" target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-[11px] text-gray-400 hover:text-white bg-gray-800 hover:bg-green-600 px-3 py-1.5 rounded-full transition-colors">
+                <WhatsAppIcon size={12} /> WhatsApp
+              </a>
+              <a href="https://t.me/hospitalguru" target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-[11px] text-gray-400 hover:text-white bg-gray-800 hover:bg-blue-500 px-3 py-1.5 rounded-full transition-colors">
+                <TelegramIcon size={12} /> Telegram
+              </a>
             </div>
           </div>
 

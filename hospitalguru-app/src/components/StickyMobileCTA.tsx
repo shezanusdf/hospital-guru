@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { WhatsAppIcon } from "@/components/icons";
 
 export default function StickyMobileCTA() {
   const { lang } = useLanguage();
@@ -14,7 +15,7 @@ export default function StickyMobileCTA() {
         rel="noopener noreferrer"
         className="flex-1 flex items-center justify-center gap-1.5 bg-green-500 hover:bg-green-600 text-white font-bold text-sm rounded-xl py-3 transition-colors"
       >
-        <span>💬</span>
+        <WhatsAppIcon size={18} />
         WhatsApp
       </a>
       <Link
