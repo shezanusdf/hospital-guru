@@ -51,5 +51,9 @@ export default async function AdminPage() {
     urgent:     inquiries.filter((i: { urgency: string }) => i.urgency === "urgent" || i.urgency === "emergency").length,
   };
 
-  return <AdminClient inquiries={inquiries} stats={stats} />;
+  // Serialize to plain objects — Prisma returns class instances
+  // which can't be passed to Client Components
+  const plainInquiries = JSON.parse(JSON.stringify(inquiries));
+
+  return <AdminClient inquiries={plainInquiries} stats={stats} />;
 }
