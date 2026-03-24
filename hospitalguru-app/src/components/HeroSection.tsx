@@ -53,11 +53,9 @@ export default function HeroSection() {
           {/* Headline */}
           <h1 className="text-4xl md:text-5xl lg:text-[3.75rem] font-extrabold text-gray-900 leading-[1.1] tracking-tight mb-4">
             {t("hero_headline")}
-            {" "}
+            <br />
             <span className="text-teal-600">{t("hero_headline_accent")}</span>
           </h1>
-
-          <p className="text-gray-500 text-lg mb-8 max-w-2xl">{t("hero_or")}</p>
 
           {/* Search box */}
           <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-2 mb-8">
@@ -138,6 +136,7 @@ export default function HeroSection() {
 
           {/* Chat CTA */}
           <div className="flex flex-wrap items-center gap-3 mb-10">
+            <span className="text-gray-400 text-sm">{t("hero_or")}</span>
             <Link
               href="#chatbot"
               className={cn(buttonVariants({ variant: "outline", size: "sm" }),
