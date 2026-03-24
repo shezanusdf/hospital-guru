@@ -1,15 +1,22 @@
 import { NextRequest } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
 import { db } from "@/lib/db";
 import { SYSTEM_PROMPT, extractStructuredData } from "@/lib/chatbot-prompt";
 import { sendInquiryNotification } from "@/lib/email";
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+// OpenRouter API — uses OpenAI-compatible format
+// Free models: no API key cost, just sign up at openrouter.ai
+const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
+const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || "meta-llama/llama-3.1-8b-instruct:free";
 
 export async function POST(req: NextRequest) {
   try {
+    if (!process.env.OPENROUTER_API_KEY) {
+      return Response.json(
+        { error: "Chat is not configured yet. Please set OPENROUTER_API_KEY." },
+        { status: 503 }
+      );
+    }
+
     const body = await req.json();
     const { messages, leadAlreadyCaptured } = body as {
       messages: { role: "user" | "assistant"; content: string }[];
@@ -20,34 +27,66 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: "Messages required" }, { status: 400 });
     }
 
-    // ── Stream response from Claude ───────────────────────────────────────
-    const stream = await anthropic.messages.stream({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 600,
-      system: SYSTEM_PROMPT,
-      messages: messages.map((m) => ({
-        role: m.role,
-        content: m.content,
-      })),
+    // ── Stream response from OpenRouter ─────────────────────────────────
+    const response = await fetch(OPENROUTER_URL, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+        "X-Title": "HospitalGuru",
+      },
+      body: JSON.stringify({
+        model: OPENROUTER_MODEL,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          ...messages.map((m) => ({ role: m.role, content: m.content })),
+        ],
+        max_tokens: 600,
+        stream: true,
+      }),
     });
 
-    // ── Stream to client, collect full response ───────────────────────────
+    if (!response.ok || !response.body) {
+      const err = await response.text();
+      console.error("[OpenRouter]", response.status, err);
+      return Response.json({ error: "AI service unavailable" }, { status: 502 });
+    }
+
+    // ── Stream to client, collect full response ─────────────────────────
     const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
     let fullResponse = "";
 
     const readable = new ReadableStream({
       async start(controller) {
         try {
-          for await (const chunk of stream) {
-            if (
-              chunk.type === "content_block_delta" &&
-              chunk.delta.type === "text_delta"
-            ) {
-              const text = chunk.delta.text;
-              fullResponse += text;
-              controller.enqueue(
-                encoder.encode(`data: ${JSON.stringify({ text })}\n\n`)
-              );
+          const reader = response.body!.getReader();
+          let buffer = "";
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split("\n");
+            buffer = lines.pop() || "";
+
+            for (const line of lines) {
+              if (!line.startsWith("data: ") || line === "data: [DONE]") continue;
+
+              try {
+                const json = JSON.parse(line.slice(6));
+                const text = json.choices?.[0]?.delta?.content;
+                if (text) {
+                  fullResponse += text;
+                  controller.enqueue(
+                    encoder.encode(`data: ${JSON.stringify({ text })}\n\n`)
+                  );
+                }
+              } catch {
+                // Skip malformed chunks
+              }
             }
           }
 
@@ -79,19 +118,21 @@ export async function POST(req: NextRequest) {
               inquiryNumber = inquiry.inquiryNumber;
 
               // ── Fire email notification (non-blocking) ──────────────────
-              sendInquiryNotification({
-                inquiryNumber: inquiry.inquiryNumber,
-                name:          (updatedStructured.name     as string) || null,
-                email:         (updatedStructured.email    as string) || null,
-                phone:         (updatedStructured.phone    as string) || null,
-                country:       (updatedStructured.country  as string) || null,
-                condition:     (updatedStructured.condition as string) || null,
-                urgency:       (updatedStructured.urgency  as string) || "routine",
-                language:      (updatedStructured.language as string) || "en",
-                chatContext:   JSON.stringify(updatedStructured),
-                source:        "chatbot",
-                createdAt:     inquiry.createdAt,
-              }).catch((e) => console.error("[Email]", e));
+              if (process.env.EMAIL_APP_PASSWORD) {
+                sendInquiryNotification({
+                  inquiryNumber: inquiry.inquiryNumber,
+                  name:          (updatedStructured.name     as string) || null,
+                  email:         (updatedStructured.email    as string) || null,
+                  phone:         (updatedStructured.phone    as string) || null,
+                  country:       (updatedStructured.country  as string) || null,
+                  condition:     (updatedStructured.condition as string) || null,
+                  urgency:       (updatedStructured.urgency  as string) || "routine",
+                  language:      (updatedStructured.language as string) || "en",
+                  chatContext:   JSON.stringify(updatedStructured),
+                  source:        "chatbot",
+                  createdAt:     inquiry.createdAt,
+                }).catch((e) => console.error("[Email]", e));
+              }
             } catch (e) {
               console.error("[Inquiry create]", e);
             }
