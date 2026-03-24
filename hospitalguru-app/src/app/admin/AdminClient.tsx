@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import {
   Users, MessageCircle, FileText, AlertTriangle,
   CheckCircle, Clock, RefreshCw, Mail, Phone,
-  ChevronDown, ChevronUp, Search, Filter
+  ChevronDown, ChevronUp, Search, Filter, LogOut
 } from "lucide-react";
 
 type Inquiry = {
@@ -130,9 +130,16 @@ export default function AdminClient({ inquiries: initial, stats }: { inquiries: 
           </div>
           <div className="text-blue-200 text-xs mt-0.5">Inquiry Management Dashboard</div>
         </div>
-        <div className="text-right text-xs text-blue-200">
-          Notifications → shezansiddique88@gmail.com
-        </div>
+        <button
+          onClick={async () => {
+            await fetch("/api/admin/logout", { method: "POST" });
+            window.location.reload();
+          }}
+          className="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+        >
+          <LogOut size={14} />
+          Logout
+        </button>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-6">
