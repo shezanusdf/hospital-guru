@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import crypto from "crypto";
 
-// Simple HMAC token — no dependencies needed
 function makeToken(password: string): string {
-  const secret = process.env.ADMIN_PASSWORD || "fallback";
-  return crypto.createHmac("sha256", secret).update("admin-session").digest("hex");
+  return crypto.createHmac("sha256", password).update("admin-session").digest("hex");
 }
 
 export async function POST(req: NextRequest) {
@@ -21,16 +18,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
-  // Set HTTP-only session cookie
   const token = makeToken(adminPassword);
-  const cookieStore = await cookies();
-  cookieStore.set("admin_session", token, {
+  const response = NextResponse.json({ ok: true });
+  response.cookies.set("admin_session", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
-    path: "/admin",
+    path: "/",
     maxAge: 60 * 60 * 24, // 24 hours
   });
 
-  return NextResponse.json({ ok: true });
+  return response;
 }

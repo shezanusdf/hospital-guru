@@ -11,6 +11,7 @@ import DoctorsSection from "@/components/DoctorsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import Footer from "@/components/Footer";
 import StickyMobileCTA from "@/components/StickyMobileCTA";
+import TelegramFloatingButton from "@/components/TelegramFloatingButton";
 
 export default function Home() {
   return (
@@ -30,6 +31,7 @@ export default function Home() {
         <Footer />
       </div>
       <StickyMobileCTA />
+      <TelegramFloatingButton />
     </main>
   );
 }
