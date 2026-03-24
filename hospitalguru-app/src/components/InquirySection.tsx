@@ -216,7 +216,11 @@ export default function InquirySection() {
                   {loading ? "Submitting..." : t("inq_submit")}
                 </Button>
 
-                <p className="text-center text-gray-400 text-xs">{t("inq_privacy")}</p>
+                <div className="flex items-center justify-center gap-1.5 text-gray-400 text-xs">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  {t("inq_privacy")}
+                </div>
+                <p className="text-center text-gray-400 text-[10px]">We never share your medical information with third parties.</p>
               </form>
             )}
           </div>
