@@ -114,7 +114,19 @@ export default function HeroSection() {
                 </div>
               </div>
 
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 rounded-xl h-auto py-3">
+              <Button
+                onClick={() => {
+                  const params = new URLSearchParams();
+                  if (treatment) params.set("treatment", treatment);
+                  if (city && city !== "Any City") params.set("city", city);
+                  const qs = params.toString();
+                  window.location.href = `/#inquiry${qs ? "?" + qs : ""}`;
+                  // Smooth scroll after hash change
+                  setTimeout(() => {
+                    document.getElementById("inquiry")?.scrollIntoView({ behavior: "smooth" });
+                  }, 100);
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 rounded-xl h-auto py-3">
                 <Search size={18} />
                 {t("hero_search_btn")}
               </Button>
@@ -137,7 +149,13 @@ export default function HeroSection() {
           <div className="flex flex-wrap gap-2">
             <span className="text-blue-200 text-sm mr-1">Popular:</span>
             {tags.slice(0, 5).map((tag) => (
-              <button key={tag} onClick={() => setTreatment(tag)}
+              <button key={tag} onClick={() => {
+                setTreatment(tag);
+                window.location.href = `/#inquiry?treatment=${encodeURIComponent(tag)}`;
+                setTimeout(() => {
+                  document.getElementById("inquiry")?.scrollIntoView({ behavior: "smooth" });
+                }, 100);
+              }}
                 className="text-sm bg-white/10 hover:bg-white/20 text-white border border-white/20 px-3 py-1 rounded-full transition-colors">
                 {tag}
               </button>

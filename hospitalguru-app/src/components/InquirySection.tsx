@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Send, Upload, CheckCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Send, Upload, CheckCircle, FileText, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -26,7 +26,17 @@ export default function InquirySection() {
   const [submitted, setSubmitted]         = useState(false);
   const [loading, setLoading]             = useState(false);
   const [inquiryNumber, setInquiryNumber] = useState("");
+  const [files, setFiles]                 = useState<File[]>([]);
   const [form, setForm] = useState({ name: "", email: "", phone: "", country: "", condition: "", message: "" });
+
+  // Pre-fill condition from Hero search
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const treatment = params.get("treatment");
+    if (treatment) {
+      setForm((prev) => ({ ...prev, condition: treatment }));
+    }
+  }, []);
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm((prev) => ({ ...prev, [k]: e.target.value }));
@@ -35,10 +45,20 @@ export default function InquirySection() {
     e.preventDefault();
     setLoading(true);
     try {
+      // Convert files to base64 for email attachment
+      const fileData = await Promise.all(
+        files.map(async (f) => ({
+          name: f.name,
+          size: f.size,
+          type: f.type,
+          base64: Buffer.from(await f.arrayBuffer()).toString("base64"),
+        }))
+      );
+
       const res = await fetch("/api/inquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, source: "web_form" }),
+        body: JSON.stringify({ ...form, source: "web_form", files: fileData }),
       });
       const data = await res.json() as { inquiryNumber?: string };
       setInquiryNumber(data.inquiryNumber ?? "");
@@ -75,7 +95,7 @@ export default function InquirySection() {
             </ul>
 
             <div className="flex items-center gap-4">
-              <a href="https://wa.me/91XXXXXXXXXX"
+              <a href="https://wa.me/918800791204"
                 className="flex items-center gap-2 bg-green-500 hover:bg-green-400 text-white font-semibold px-5 py-2.5 rounded-full transition-colors text-sm">
                 💬 WhatsApp
               </a>
@@ -152,10 +172,40 @@ export default function InquirySection() {
                 </div>
 
                 {/* File upload */}
-                <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-blue-300 transition-colors cursor-pointer">
-                  <Upload size={20} className="text-gray-400 mx-auto mb-1" />
-                  <div className="text-xs text-gray-500">{t("inq_upload")}</div>
-                  <div className="text-xs text-gray-400 mt-0.5">{t("inq_upload_sub")}</div>
+                <div>
+                  <label
+                    htmlFor="file-upload"
+                    className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-blue-300 transition-colors cursor-pointer block"
+                  >
+                    <Upload size={20} className="text-gray-400 mx-auto mb-1" />
+                    <div className="text-xs text-gray-500">{t("inq_upload")}</div>
+                    <div className="text-xs text-gray-400 mt-0.5">{t("inq_upload_sub")}</div>
+                  </label>
+                  <input
+                    id="file-upload"
+                    type="file"
+                    multiple
+                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files) setFiles(Array.from(e.target.files));
+                    }}
+                  />
+                  {files.length > 0 && (
+                    <div className="mt-2 space-y-1">
+                      {files.map((f, i) => (
+                        <div key={i} className="flex items-center gap-2 bg-blue-50 rounded-lg px-3 py-1.5 text-xs">
+                          <FileText size={14} className="text-blue-500 shrink-0" />
+                          <span className="text-gray-700 truncate flex-1">{f.name}</span>
+                          <span className="text-gray-400">{(f.size / 1024).toFixed(0)} KB</span>
+                          <button type="button" onClick={() => setFiles(files.filter((_, j) => j !== i))}
+                            className="text-gray-400 hover:text-red-500">
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <Button type="submit" disabled={loading}

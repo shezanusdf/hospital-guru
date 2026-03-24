@@ -9,7 +9,7 @@ export default function StickyMobileCTA() {
   return (
     <div className="fixed bottom-0 inset-x-0 z-40 md:hidden bg-white border-t border-gray-200 shadow-lg px-4 py-3 flex gap-2">
       <a
-        href="https://wa.me/91XXXXXXXXXX"
+        href="https://wa.me/918800791204"
         target="_blank"
         rel="noopener noreferrer"
         className="flex-1 flex items-center justify-center gap-1.5 bg-green-500 hover:bg-green-600 text-white font-bold text-sm rounded-xl py-3 transition-colors"
