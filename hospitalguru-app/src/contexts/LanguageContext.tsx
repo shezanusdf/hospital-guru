@@ -18,8 +18,8 @@ export const translations = {
     nav_top_bar:         "🌍 Serving 15+ CIS countries · First contact: Global International Hospital, Tashkent",
 
     // Hero — split into base + accent so the accent word can be coloured without hacking
-    hero_headline:       "World-Class Treatment in",
-    hero_headline_accent:"India",
+    hero_headline:       "World-Class Treatment",
+    hero_headline_accent:"in India",
     hero_sub:            "Trusted by 50,000+ patients from Russia, Kazakhstan, Ukraine & CIS",
     hero_search_ph:      "Search treatment, condition or specialty...",
     hero_city_ph:        "All Cities",
@@ -114,8 +114,8 @@ export const translations = {
     nav_free_consult:    "Бесплатная консультация",
     nav_top_bar:         "🌍 Обслуживаем 15+ стран СНГ · Первый контакт: Глобал Интернэшнл Хоспитал, Ташкент",
 
-    hero_headline:        "Лечение мирового класса в",
-    hero_headline_accent: "Индии",
+    hero_headline:        "Лечение мирового класса",
+    hero_headline_accent: "в Индии",
     hero_sub:            "Нам доверяют 50 000+ пациентов из России, Казахстана, Украины и СНГ",
     hero_search_ph:      "Поиск лечения, заболевания или специальности...",
     hero_city_ph:        "Все города",
@@ -201,8 +201,8 @@ export const translations = {
     nav_free_consult:    "Тегін кеңес",
     nav_top_bar:         "🌍 15+ ТМД елдеріне қызмет · Бірінші байланыс: Global International Hospital, Ташкент",
 
-    hero_headline:        "Үндістандағы әлемдік деңгейдегі",
-    hero_headline_accent: "емдеу",
+    hero_headline:        "Әлемдік деңгейдегі емдеу",
+    hero_headline_accent: "Үндістанда",
     hero_sub:            "Ресей, Қазақстан, Украина және ТМД-дан 50 000+ пациент сенеді",
     hero_search_ph:      "Емдеу, ауру немесе мамандықты іздеңіз...",
     hero_city_ph:        "Барлық қалалар",
@@ -288,8 +288,8 @@ export const translations = {
     nav_free_consult:    "Безкоштовна консультація",
     nav_top_bar:         "🌍 Обслуговуємо 15+ країн СНД · Перший контакт: Global International Hospital, Ташкент",
 
-    hero_headline:        "Лікування світового класу в",
-    hero_headline_accent: "Індії",
+    hero_headline:        "Лікування світового класу",
+    hero_headline_accent: "в Індії",
     hero_sub:            "Нам довіряють 50 000+ пацієнтів з Росії, Казахстану, України та СНД",
     hero_search_ph:      "Пошук лікування, захворювання або спеціальності...",
     hero_city_ph:        "Всі міста",
