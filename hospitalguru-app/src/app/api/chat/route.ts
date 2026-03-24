@@ -6,7 +6,7 @@ import { sendInquiryNotification } from "@/lib/email";
 // OpenRouter API — uses OpenAI-compatible format
 // Free models: no API key cost, just sign up at openrouter.ai
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || "meta-llama/llama-3.1-8b-instruct:free";
+const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || "nvidia/nemotron-3-nano-30b-a3b:free";
 
 export async function POST(req: NextRequest) {
   try {
