@@ -25,13 +25,14 @@ export default async function AdminPage() {
   const plainInquiries = JSON.parse(JSON.stringify(inquiries));
 
   const stats = {
-    total:      totalCount,
-    new:        plainInquiries.filter((i: { status: string }) => i.status === "new").length,
-    inProgress: plainInquiries.filter((i: { status: string }) => i.status === "in_progress").length,
-    completed:  plainInquiries.filter((i: { status: string }) => i.status === "completed").length,
-    chatbot:    plainInquiries.filter((i: { source: string }) => i.source === "chatbot").length,
-    webForm:    plainInquiries.filter((i: { source: string }) => i.source === "web_form").length,
-    urgent:     plainInquiries.filter((i: { urgency: string }) => i.urgency === "urgent" || i.urgency === "emergency").length,
+    total:         totalCount,
+    pendingReview: plainInquiries.filter((i: { status: string }) => i.status === "pending_review").length,
+    new:           plainInquiries.filter((i: { status: string }) => i.status === "new").length,
+    inProgress:    plainInquiries.filter((i: { status: string }) => i.status === "in_progress").length,
+    completed:     plainInquiries.filter((i: { status: string }) => i.status === "completed").length,
+    chatbot:       plainInquiries.filter((i: { source: string }) => i.source === "chatbot").length,
+    webForm:       plainInquiries.filter((i: { source: string }) => i.source === "web_form").length,
+    urgent:        plainInquiries.filter((i: { urgency: string }) => i.urgency === "urgent" || i.urgency === "emergency").length,
   };
 
   return <AdminClient inquiries={plainInquiries} stats={stats} />;

@@ -2,30 +2,47 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Star, Video, ChevronRight } from "lucide-react";
+import { Star, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
+import { DOCTORS, SPECIALTIES } from "@/data/doctors";
 
-const doctors = [
-  { name: "Dr. Naresh Trehan",   title: "Cardiac Surgeon",     hospital: "Medanta — The Medicity, Delhi",   experience: "50+", rating: 4.9, reviews: 1820, languages: ["EN", "HI"],      fee: "$120", specialty: "Cardiology",   fallbackBg: "bg-blue-500",   initials: "NT", available: true  },
-  { name: "Dr. Shyam Aggarwal",  title: "Senior Oncologist",   hospital: "Sir Ganga Ram Hospital, Delhi",   experience: "30+", rating: 4.8, reviews:  940, languages: ["EN", "HI", "RU"], fee:  "$90", specialty: "Oncology",    fallbackBg: "bg-purple-500", initials: "SA", available: true  },
-  { name: "Dr. Pradeep Bhosle",  title: "Neurosurgeon",        hospital: "Apollo Hospitals, Chennai",       experience: "25+", rating: 4.9, reviews:  760, languages: ["EN", "HI", "TA"], fee: "$100", specialty: "Neurology",   fallbackBg: "bg-teal-500",   initials: "PB", available: false },
-  { name: "Dr. Suresh Advani",   title: "Medical Oncologist",  hospital: "Jaslok Hospital, Mumbai",         experience: "40+", rating: 4.8, reviews: 1340, languages: ["EN", "HI"],      fee: "$110", specialty: "Oncology",    fallbackBg: "bg-green-500",  initials: "SA", available: true  },
+const FILTERS = ["All", ...SPECIALTIES.slice(0, 5)] as const;
+
+const FEATURED_IDS = [1, 7, 13, 25, 37, 47, 57, 67];
+const featured = DOCTORS.filter((d) => FEATURED_IDS.includes(d.id));
+
+function DoctorPhoto({ photo, name, bg }: { photo: string; name: string; bg: string }) {
+  return (
+    <div className={cn("relative w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center shrink-0", bg)}>
+      <span className="text-white text-2xl font-black select-none absolute">
+        {name.split(" ").slice(1).map((w) => w[0]).join("").slice(0, 2)}
+      </span>
+      <img
+        src={photo}
+        alt={name}
+        className="absolute inset-0 w-full h-full object-cover"
+        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+      />
+    </div>
+  );
+}
+
+const BG_COLORS = [
+  "bg-blue-500","bg-purple-500","bg-teal-500","bg-green-500",
+  "bg-rose-500","bg-orange-500","bg-sky-500","bg-pink-500",
 ];
-
-const FILTERS = ["All", "Cardiology", "Oncology", "Orthopedics", "Neurology"];
-
-const langLabel: Record<string, string> = { EN: "English", HI: "Hindi", RU: "Russian", TA: "Tamil" };
 
 export default function DoctorsSection() {
   const { t } = useLanguage();
   const [active, setActive] = useState("All");
 
-  const visible = active === "All" ? doctors : doctors.filter((d) => d.specialty === active);
+  const visible = active === "All"
+    ? featured
+    : featured.filter((d) => d.specialty === active);
 
   return (
     <section id="doctors" className="py-20 bg-white">
@@ -33,7 +50,9 @@ export default function DoctorsSection() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
           <div>
-            <Badge className="bg-teal-100 text-teal-700 border-0 mb-3 font-semibold tracking-wide uppercase text-[11px]">Specialist Doctors</Badge>
+            <Badge className="bg-teal-100 text-teal-700 border-0 mb-3 font-semibold tracking-wide uppercase text-[11px]">
+              Specialist Doctors
+            </Badge>
             <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-2">{t("doc_title")}</h2>
             <p className="text-gray-500">{t("doc_sub")}</p>
           </div>
@@ -54,36 +73,25 @@ export default function DoctorsSection() {
 
         {/* Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {visible.map((doc) => (
-            <Card key={doc.name + doc.title} className="hover:shadow-lg transition-shadow duration-300 group">
+          {(visible.length > 0 ? visible : featured).map((doc, i) => (
+            <Card key={doc.id} className="hover:shadow-lg transition-shadow duration-300 group">
               <CardContent className="pt-2">
-                {/* Avatar row */}
-                <div className="relative mb-4 inline-block">
-                  <Avatar size="lg" className={cn("w-16 h-16 rounded-2xl", doc.fallbackBg)}>
-                    <AvatarFallback className={cn("rounded-2xl text-white text-2xl font-black", doc.fallbackBg)}>
-                      {doc.initials}
-                    </AvatarFallback>
-                  </Avatar>
-                  {doc.available && (
-                    <span className="absolute -top-1 -right-1 bg-green-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
-                      <Video size={8} /> LIVE
-                    </span>
-                  )}
+                <div className="mb-4">
+                  <DoctorPhoto photo={doc.photo} name={doc.name} bg={BG_COLORS[i % BG_COLORS.length]} />
                 </div>
 
                 <h3 className="font-bold text-gray-900 text-sm group-hover:text-blue-600 transition-colors mb-0.5">
                   {doc.name}
                 </h3>
                 <div className="text-teal-600 text-xs font-semibold mb-1">{doc.title}</div>
-                <div className="text-gray-400 text-xs mb-3 leading-snug">{doc.hospital}</div>
+                <div className="text-gray-400 text-xs mb-3 leading-snug">{doc.hospital}, {doc.city}</div>
 
                 {/* Language badges */}
                 <div className="flex gap-1 mb-3 flex-wrap">
-                  {doc.languages.map((l) => (
-                    <Badge key={l} variant={l === "RU" ? "default" : "secondary"}
-                      title={langLabel[l]}
-                      className={cn("text-xs h-auto py-0.5",
-                        l === "RU" ? "bg-blue-100 text-blue-700 border-0" : "bg-gray-100 text-gray-500 border-0"
+                  {doc.langs.map((l) => (
+                    <Badge key={l}
+                      className={cn("text-xs h-auto py-0.5 border-0",
+                        l === "RU" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-500"
                       )}>
                       {l}
                     </Badge>
@@ -106,7 +114,8 @@ export default function DoctorsSection() {
                   <div className="text-xs text-gray-400">{t("doc_fee")}</div>
                   <div className="font-bold text-gray-800 text-sm">{doc.fee}</div>
                 </div>
-                <Link href="#inquiry"
+                <Link
+                  href={`/?condition=${encodeURIComponent(`Consult ${doc.name} — ${doc.specialty}`)}#inquiry`}
                   className="flex items-center gap-1 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">
                   {t("doc_book")} <ChevronRight size={12} />
                 </Link>
@@ -116,7 +125,8 @@ export default function DoctorsSection() {
         </div>
 
         <div className="text-center mt-10">
-          <Link href="#" className={cn(buttonVariants({ variant: "outline" }), "rounded-full px-8 border-2 border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white")}>
+          <Link href="/doctors"
+            className={cn(buttonVariants({ variant: "outline" }), "rounded-full px-8 border-2 border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white")}>
             {t("doc_view_all")}
           </Link>
         </div>

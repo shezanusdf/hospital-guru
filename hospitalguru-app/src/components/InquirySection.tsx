@@ -30,6 +30,12 @@ export default function InquirySection() {
   const [files, setFiles]                 = useState<File[]>([]);
   const [form, setForm] = useState({ name: "", email: "", phone: "", country: "", condition: "", message: "" });
 
+  // Pre-fill condition from URL param (e.g. doctor "Send Inquiry" links)
+  useEffect(() => {
+    const condition = new URLSearchParams(window.location.search).get("condition");
+    if (condition) setForm((prev) => ({ ...prev, condition }));
+  }, []);
+
   // Pre-fill condition when Hero search fires
   useEffect(() => {
     const handler = (e: Event) => {

@@ -26,17 +26,18 @@ type Inquiry = {
 };
 
 type Stats = {
-  total: number; new: number; inProgress: number; completed: number;
+  total: number; pendingReview: number; new: number; inProgress: number; completed: number;
   chatbot: number; webForm: number; urgent: number;
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  new:         { label: "New",         color: "#1d4ed8", bg: "#eff6ff" },
-  in_progress: { label: "In Progress", color: "#92400e", bg: "#fef3c7" },
-  quote_sent:  { label: "Quote Sent",  color: "#6d28d9", bg: "#f5f3ff" },
-  accepted:    { label: "Accepted",    color: "#065f46", bg: "#d1fae5" },
-  completed:   { label: "Completed",   color: "#14532d", bg: "#dcfce7" },
-  cancelled:   { label: "Cancelled",   color: "#6b7280", bg: "#f3f4f6" },
+  pending_review: { label: "Pending Review", color: "#92400e", bg: "#fef9c3" },
+  new:            { label: "New",            color: "#1d4ed8", bg: "#eff6ff" },
+  in_progress:    { label: "In Progress",    color: "#92400e", bg: "#fef3c7" },
+  quote_sent:     { label: "Quote Sent",     color: "#6d28d9", bg: "#f5f3ff" },
+  accepted:       { label: "Accepted",       color: "#065f46", bg: "#d1fae5" },
+  completed:      { label: "Completed",      color: "#14532d", bg: "#dcfce7" },
+  cancelled:      { label: "Cancelled",      color: "#6b7280", bg: "#f3f4f6" },
 };
 
 const URGENCY_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
@@ -122,7 +123,7 @@ export default function AdminClient({ inquiries: initial, stats }: { inquiries: 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top bar */}
-      <div className="bg-gradient-to-r from-blue-700 to-teal-600 text-white px-6 py-4 flex items-center justify-between">
+      <div className="bg-linear-to-r from-blue-700 to-teal-600 text-white px-6 py-4 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
             <span className="font-black text-xl">Hospital<span className="text-teal-300">Guru</span></span>
@@ -145,15 +146,16 @@ export default function AdminClient({ inquiries: initial, stats }: { inquiries: 
       <div className="max-w-7xl mx-auto px-4 py-6">
 
         {/* Stats row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
           {[
-            { label: "Total",       value: stats.total,      icon: Users,         color: "text-blue-600",   bg: "bg-blue-50" },
-            { label: "New",         value: stats.new,        icon: Clock,         color: "text-yellow-600", bg: "bg-yellow-50" },
-            { label: "In Progress", value: stats.inProgress, icon: RefreshCw,     color: "text-purple-600", bg: "bg-purple-50" },
-            { label: "Completed",   value: stats.completed,  icon: CheckCircle,   color: "text-green-600",  bg: "bg-green-50" },
-            { label: "🤖 Chatbot",  value: stats.chatbot,    icon: MessageCircle, color: "text-blue-500",   bg: "bg-blue-50" },
-            { label: "📝 Web Form", value: stats.webForm,    icon: FileText,      color: "text-indigo-600", bg: "bg-indigo-50" },
-            { label: "⚡ Urgent",   value: stats.urgent,     icon: AlertTriangle, color: "text-red-600",    bg: "bg-red-50" },
+            { label: "Total",          value: stats.total,         icon: Users,         color: "text-blue-600",   bg: "bg-blue-50" },
+            { label: "⏳ Pending",     value: stats.pendingReview, icon: Clock,         color: "text-orange-600", bg: "bg-orange-50" },
+            { label: "New",            value: stats.new,           icon: Clock,         color: "text-yellow-600", bg: "bg-yellow-50" },
+            { label: "In Progress",    value: stats.inProgress,    icon: RefreshCw,     color: "text-purple-600", bg: "bg-purple-50" },
+            { label: "Completed",      value: stats.completed,     icon: CheckCircle,   color: "text-green-600",  bg: "bg-green-50" },
+            { label: "🤖 Chatbot",     value: stats.chatbot,       icon: MessageCircle, color: "text-blue-500",   bg: "bg-blue-50" },
+            { label: "📝 Web Form",    value: stats.webForm,       icon: FileText,      color: "text-indigo-600", bg: "bg-indigo-50" },
+            { label: "⚡ Urgent",      value: stats.urgent,        icon: AlertTriangle, color: "text-red-600",    bg: "bg-red-50" },
           ].map((s) => {
             const Icon = s.icon;
             return (
@@ -170,7 +172,7 @@ export default function AdminClient({ inquiries: initial, stats }: { inquiries: 
 
         {/* Filters + Search */}
         <div className="bg-white rounded-xl border border-gray-100 p-4 mb-4 flex flex-wrap gap-3 items-center">
-          <div className="relative flex-1 min-w-[200px]">
+          <div className="relative flex-1 min-w-50">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
@@ -243,8 +245,9 @@ export default function AdminClient({ inquiries: initial, stats }: { inquiries: 
                     <React.Fragment key={inq.id}>
                       <tr
                         className={`border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer ${
-                          inq.urgency === "emergency" ? "bg-red-50/50" :
-                          inq.urgency === "urgent"    ? "bg-yellow-50/30" : ""
+                          inq.status  === "pending_review" ? "bg-yellow-50/40" :
+                          inq.urgency === "emergency"      ? "bg-red-50/50"    :
+                          inq.urgency === "urgent"         ? "bg-yellow-50/30" : ""
                         }`}
                         onClick={() => setExpandedId(isExpanded ? null : inq.id)}
                       >
@@ -263,7 +266,7 @@ export default function AdminClient({ inquiries: initial, stats }: { inquiries: 
                           {inq.guestCountry ?? "—"}
                         </td>
                         <td className="px-4 py-3 hidden lg:table-cell">
-                          <div className="text-sm text-gray-700 max-w-[180px] truncate">
+                          <div className="text-sm text-gray-700 max-w-45 truncate">
                             {inq.treatmentName ?? inq.medicalSummary ?? "—"}
                           </div>
                         </td>
@@ -332,6 +335,23 @@ export default function AdminClient({ inquiries: initial, stats }: { inquiries: 
                               <div>
                                 <div className="text-xs font-bold text-gray-500 uppercase mb-2">Quick Actions</div>
                                 <div className="space-y-2">
+                                  {/* Approval gate for pending leads */}
+                                  {inq.status === "pending_review" && (
+                                    <div className="flex gap-2">
+                                      <button
+                                        onClick={() => updateStatus(inq.id, "new")}
+                                        disabled={updatingId === inq.id}
+                                        className="flex-1 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors">
+                                        ✅ Approve Lead
+                                      </button>
+                                      <button
+                                        onClick={() => updateStatus(inq.id, "cancelled")}
+                                        disabled={updatingId === inq.id}
+                                        className="flex-1 bg-red-50 hover:bg-red-100 disabled:opacity-50 text-red-600 text-xs font-bold px-3 py-2 rounded-lg border border-red-200 transition-colors">
+                                        ✕ Decline
+                                      </button>
+                                    </div>
+                                  )}
                                   {inq.guestEmail && (
                                     <a href={`mailto:${inq.guestEmail}?subject=Re: Your HospitalGuru Inquiry ${inq.inquiryNumber}`}
                                        className="flex items-center gap-2 bg-blue-600 text-white text-xs font-semibold px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors">

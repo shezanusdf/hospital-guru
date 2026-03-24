@@ -3,8 +3,9 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 
 const UpdateSchema = z.object({
-  status: z.enum(["new", "in_progress", "quote_sent", "accepted", "completed", "cancelled"]).optional(),
+  status: z.enum(["pending_review", "new", "in_progress", "quote_sent", "accepted", "completed", "cancelled"]).optional(),
   internalNotes: z.string().max(2000).optional(),
+  assignedTo: z.string().max(200).optional(),
 });
 
 export async function PATCH(

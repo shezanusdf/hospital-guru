@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
         treatmentName: condition || null,
         medicalSummary: message || null,
         source,
-        status: "new",
+        status: "pending_review",
       },
     });
 
