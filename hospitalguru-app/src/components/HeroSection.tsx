@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Search, MapPin, Stethoscope, ChevronDown, ArrowRight, Star } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useLanguage, translations } from "@/contexts/LanguageContext";
 import Link from "next/link";
 import { cn } from "@/lib/utils";

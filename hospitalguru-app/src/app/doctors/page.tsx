@@ -24,7 +24,7 @@ const doctors = [
 ];
 
 const SPECS = ["All", "Cardiology", "Oncology", "Orthopaedics", "Neurology", "IVF"];
-const LANGS = ["All", "Russian (RU)", "English (EN)", "Hindi (HI)"];
+
 
 export default function DoctorsPage() {
   const { t } = useLanguage();
