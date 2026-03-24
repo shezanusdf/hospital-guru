@@ -6,6 +6,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  const adminPassword = process.env.ADMIN_PASSWORD;
+
+  // If no password configured, block access entirely
+  if (!adminPassword) {
+    return new NextResponse("Admin not configured", { status: 503 });
+  }
+
   const authHeader = request.headers.get("authorization");
 
   if (!authHeader || !authHeader.startsWith("Basic ")) {
@@ -19,7 +26,7 @@ export function middleware(request: NextRequest) {
   const decoded = atob(base64);
   const [user, pass] = decoded.split(":");
 
-  if (user !== "admin" || pass !== process.env.ADMIN_PASSWORD) {
+  if (user !== "admin" || pass !== adminPassword) {
     return new NextResponse("Invalid credentials", {
       status: 401,
       headers: { "WWW-Authenticate": 'Basic realm="HospitalGuru Admin"' },
@@ -29,7 +36,6 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Only apply to /admin routes
 export const config = {
   matcher: ["/admin/:path*"],
 };
