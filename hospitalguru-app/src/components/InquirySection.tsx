@@ -30,13 +30,14 @@ export default function InquirySection() {
   const [files, setFiles]                 = useState<File[]>([]);
   const [form, setForm] = useState({ name: "", email: "", phone: "", country: "", condition: "", message: "" });
 
-  // Pre-fill condition from Hero search
+  // Pre-fill condition when Hero search fires
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const treatment = params.get("treatment");
-    if (treatment) {
-      setForm((prev) => ({ ...prev, condition: treatment }));
-    }
+    const handler = (e: Event) => {
+      const treatment = (e as CustomEvent).detail?.treatment;
+      if (treatment) setForm((prev) => ({ ...prev, condition: treatment }));
+    };
+    window.addEventListener("prefill-inquiry", handler);
+    return () => window.removeEventListener("prefill-inquiry", handler);
   }, []);
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>

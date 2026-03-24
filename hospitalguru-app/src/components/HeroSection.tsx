@@ -116,15 +116,8 @@ export default function HeroSection() {
 
               <Button
                 onClick={() => {
-                  const params = new URLSearchParams();
-                  if (treatment) params.set("treatment", treatment);
-                  if (city && city !== "Any City") params.set("city", city);
-                  const qs = params.toString();
-                  window.location.href = `/#inquiry${qs ? "?" + qs : ""}`;
-                  // Smooth scroll after hash change
-                  setTimeout(() => {
-                    document.getElementById("inquiry")?.scrollIntoView({ behavior: "smooth" });
-                  }, 100);
+                  window.dispatchEvent(new CustomEvent("prefill-inquiry", { detail: { treatment } }));
+                  document.getElementById("inquiry")?.scrollIntoView({ behavior: "smooth" });
                 }}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 rounded-xl h-auto py-3">
                 <Search size={18} />
@@ -151,10 +144,8 @@ export default function HeroSection() {
             {tags.slice(0, 5).map((tag) => (
               <button key={tag} onClick={() => {
                 setTreatment(tag);
-                window.location.href = `/#inquiry?treatment=${encodeURIComponent(tag)}`;
-                setTimeout(() => {
-                  document.getElementById("inquiry")?.scrollIntoView({ behavior: "smooth" });
-                }, 100);
+                window.dispatchEvent(new CustomEvent("prefill-inquiry", { detail: { treatment: tag } }));
+                document.getElementById("inquiry")?.scrollIntoView({ behavior: "smooth" });
               }}
                 className="text-sm bg-white/10 hover:bg-white/20 text-white border border-white/20 px-3 py-1 rounded-full transition-colors">
                 {tag}
