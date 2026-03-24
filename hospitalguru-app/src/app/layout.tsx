@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ChatWidget from "@/components/ChatWidget";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
 // Inter: excellent Cyrillic support (Latin + Cyrillic subsets)
@@ -39,7 +38,6 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <LanguageProvider>
           {children}
-          <ChatWidget />
         </LanguageProvider>
       </body>
     </html>
