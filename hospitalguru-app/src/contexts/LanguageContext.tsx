@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 
 export type Lang = "en" | "ru" | "kk" | "uk";
 
@@ -385,15 +385,12 @@ const LanguageContext = createContext<LanguageCtx>({
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("en");
-
-  // Restore from localStorage on mount
-  useEffect(() => {
+  // Restore from localStorage via lazy initializer (no useEffect needed)
+  const [lang, setLangState] = useState<Lang>(() => {
+    if (typeof window === "undefined") return "en";
     const saved = localStorage.getItem("hg_lang") as Lang | null;
-    if (saved && ["en", "ru", "kk", "uk"].includes(saved)) {
-      setLangState(saved);
-    }
-  }, []);
+    return saved && ["en", "ru", "kk", "uk"].includes(saved) ? saved : "en";
+  });
 
   function setLang(l: Lang) {
     setLangState(l);

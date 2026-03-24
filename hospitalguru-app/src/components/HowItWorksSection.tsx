@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { FileText, Users, Plane, Heart } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
