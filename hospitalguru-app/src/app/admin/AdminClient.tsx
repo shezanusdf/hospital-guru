@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import {
   Users, MessageCircle, FileText, AlertTriangle,
   CheckCircle, Clock, RefreshCw, Mail, Phone,
-  ChevronDown, ChevronUp, Search, Filter, LogOut
+  ChevronDown, ChevronUp, Search, Filter, LogOut, Trash2
 } from "lucide-react";
 
 type Inquiry = {
@@ -76,6 +76,7 @@ export default function AdminClient({ inquiries: initial, stats }: { inquiries: 
   const [updatingId, setUpdatingId]       = useState<string | null>(null);
   const [noteId, setNoteId]               = useState<string | null>(null);
   const [noteText, setNoteText]           = useState("");
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const filtered = inquiries.filter((i) => {
     if (filterStatus !== "all" && i.status !== filterStatus) return false;
@@ -107,6 +108,13 @@ export default function AdminClient({ inquiries: initial, stats }: { inquiries: 
     } finally {
       setUpdatingId(null);
     }
+  }
+
+  async function deleteInquiry(id: string) {
+    await fetch(`/api/inquiries/${id}`, { method: "DELETE" });
+    setInquiries((prev) => prev.filter((i) => i.id !== id));
+    setConfirmDeleteId(null);
+    setExpandedId(null);
   }
 
   async function saveNote(id: string) {
@@ -395,6 +403,28 @@ export default function AdminClient({ inquiries: initial, stats }: { inquiries: 
                                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2 text-xs text-yellow-800">
                                       📌 {inq.internalNotes}
                                     </div>
+                                  )}
+
+                                  {/* Delete */}
+                                  {confirmDeleteId === inq.id ? (
+                                    <div className="flex gap-2 pt-1">
+                                      <button
+                                        onClick={() => deleteInquiry(inq.id)}
+                                        className="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors">
+                                        Confirm Delete
+                                      </button>
+                                      <button
+                                        onClick={() => setConfirmDeleteId(null)}
+                                        className="text-xs text-gray-500 px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <button
+                                      onClick={() => setConfirmDeleteId(inq.id)}
+                                      className="flex items-center gap-2 text-gray-400 hover:text-red-500 text-xs font-medium px-3 py-2 rounded-lg hover:bg-red-50 transition-colors w-full border border-transparent hover:border-red-100">
+                                      <Trash2 size={12} /> Delete Lead
+                                    </button>
                                   )}
                                 </div>
                               </div>
