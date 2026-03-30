@@ -23,6 +23,7 @@
     "next": "^15.5.14",
     "nodemailer": "^8.0.3",
     "prisma": "^6.19.2",
+    "razorpay": "^2.9.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "shadcn": "^4.1.0",

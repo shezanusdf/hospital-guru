@@ -8,6 +8,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ─── HOSPITAL ACCOUNT (credit tracking — no registration required) ────────────
+
+model HospitalAccount {
+  id             String              @id @default(cuid())
+  email          String              @unique
+  freeLeadsUsed  Int                 @default(0)
+  creditBalance  Int                 @default(0)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  transactions   CreditTransaction[]
+}
+
+model CreditTransaction {
+  id                  String          @id @default(cuid())
+  hospitalEmail       String
+  hospital            HospitalAccount @relation(fields: [hospitalEmail], references: [email])
+  type                String          // "free_lead" | "paid_lead" | "purchase"
+  credits             Int             // negative for deductions, positive for purchases
+  amountPaid          Int?            // in paise (purchase only)
+  razorpayOrderId     String?
+  razorpayPaymentId   String?
+  inquiryId           String?
+  createdAt           DateTime        @default(now())
+}
+
 // ─── INQUIRY ──────────────────────────────────────────────────────────────────
 
 model Inquiry {
