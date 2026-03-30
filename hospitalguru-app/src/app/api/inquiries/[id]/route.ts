@@ -9,7 +9,6 @@ import { sendNetworkLeadEmails } from "@/lib/email";
 const UpdateSchema = z.object({
   status: z.enum(["pending_review", "new", "in_progress", "quote_sent", "accepted", "completed", "cancelled"]).optional(),
   internalNotes: z.string().max(2000).optional(),
-  assignedTo: z.string().max(200).optional(),
 });
 
 export async function PATCH(
@@ -29,12 +28,12 @@ export async function PATCH(
     data: parsed.data,
   });
 
+  let emailResult: { sent: number; failed: number } | null = null;
+
   // ── Auto-route lead when admin approves (pending_review → new) ──────────────
   if (parsed.data.status === "new" && !inquiry.networkEmailedAt) {
     const specialty = detectSpecialty(inquiry.treatmentName);
     const contacts = NETWORK[specialty] ?? NETWORK.general;
-
-    // Generate a unique token for this lead's Accept buttons
     const leadToken = randomBytes(32).toString("hex");
 
     await db.inquiry.update({
@@ -42,25 +41,26 @@ export async function PATCH(
       data: { leadToken, networkEmailedAt: new Date() },
     });
 
-    // Fire emails in background — don't block the admin response
-    sendNetworkLeadEmails({
-      inquiryNumber: inquiry.inquiryNumber,
-      leadToken,
-      specialty,
-      condition: inquiry.treatmentName,
-      medicalSummary: inquiry.medicalSummary,
-      country: inquiry.guestCountry,
-      urgency: inquiry.urgency,
-      language: inquiry.guestLanguage,
-      contacts,
-    }).then(({ sent, failed }) => {
-      console.log(`[Lead Routing] ${inquiry.inquiryNumber} → ${specialty}: ${sent} sent, ${failed} failed`);
-    }).catch((err) => {
+    try {
+      emailResult = await sendNetworkLeadEmails({
+        inquiryNumber: inquiry.inquiryNumber,
+        leadToken,
+        specialty,
+        condition: inquiry.treatmentName,
+        medicalSummary: inquiry.medicalSummary,
+        country: inquiry.guestCountry,
+        urgency: inquiry.urgency,
+        language: inquiry.guestLanguage,
+        contacts,
+      });
+      console.log(`[Lead Routing] ${inquiry.inquiryNumber} → ${specialty}: ${emailResult.sent} sent, ${emailResult.failed} failed`);
+    } catch (err) {
       console.error(`[Lead Routing] Failed for ${inquiry.inquiryNumber}:`, err);
-    });
+      emailResult = { sent: 0, failed: contacts.length };
+    }
   }
 
-  return Response.json({ success: true, inquiry });
+  return Response.json({ success: true, inquiry, emailResult });
 }
 
 export async function DELETE(
@@ -77,10 +77,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const inquiry = await db.inquiry.findUnique({
-    where: { id },
-  });
-
+  const inquiry = await db.inquiry.findUnique({ where: { id } });
   if (!inquiry) return Response.json({ error: "Not found" }, { status: 404 });
   return Response.json({ data: inquiry });
 }
