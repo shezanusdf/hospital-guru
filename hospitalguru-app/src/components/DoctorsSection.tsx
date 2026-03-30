@@ -109,14 +109,10 @@ export default function DoctorsSection() {
                 </div>
               </CardContent>
 
-              <CardFooter className="flex items-center justify-between">
-                <div>
-                  <div className="text-xs text-gray-400">{t("doc_fee")}</div>
-                  <div className="font-bold text-gray-800 text-sm">{doc.fee}</div>
-                </div>
+              <CardFooter>
                 <Link
                   href={`/?condition=${encodeURIComponent(`Consult ${doc.name} — ${doc.specialty}`)}#inquiry`}
-                  className="flex items-center gap-1 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">
+                  className="flex items-center gap-1 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors w-full justify-center">
                   {t("doc_book")} <ChevronRight size={12} />
                 </Link>
               </CardFooter>
