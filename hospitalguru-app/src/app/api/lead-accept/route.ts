@@ -7,7 +7,7 @@ const FREE_QUOTA = parseInt(process.env.FREE_LEADS_QUOTA ?? "5");
 export async function GET(req: NextRequest) {
   const token      = req.nextUrl.searchParams.get("token");
   const forEncoded = req.nextUrl.searchParams.get("for");
-  const appUrl     = process.env.NEXT_PUBLIC_APP_URL ?? "https://hospitalguru.com";
+  const appUrl     = req.nextUrl.origin; // always matches where the request came from
 
   if (!token) {
     return Response.redirect(new URL("/lead-accepted?status=invalid", req.url));
