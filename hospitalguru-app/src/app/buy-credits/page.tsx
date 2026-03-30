@@ -94,7 +94,7 @@ function BuyCreditsContent() {
         {/* Header */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-800 text-sm font-semibold px-4 py-2 rounded-full mb-4">
-            ⚠️ You've used all your free leads
+            ⚠️ You&apos;ve used all your free leads
           </div>
           <h1 className="text-3xl font-black text-gray-900 mb-3">
             Buy Lead Credits
