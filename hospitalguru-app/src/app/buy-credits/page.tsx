@@ -21,8 +21,27 @@ function BuyCreditsContent() {
   const pendingFor    = params.get("pending_for")   ?? "";
   const email         = params.get("email")         ?? "";
 
-  const [loading, setLoading] = useState<number | null>(null);
-  const [error,   setError]   = useState<string | null>(null);
+  const [loading,    setLoading]    = useState<number | null>(null);
+  const [bypassing,  setBypassing]  = useState(false);
+  const [error,      setError]      = useState<string | null>(null);
+  const isDev = process.env.NODE_ENV !== "production";
+
+  async function handleDevBypass() {
+    setBypassing(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/payment/dev-bypass", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ email, credits: 10, pending_token: pendingToken, pending_for: pendingFor }),
+      });
+      const { returnUrl } = await res.json();
+      window.location.href = returnUrl;
+    } catch {
+      setError("Dev bypass failed.");
+      setBypassing(false);
+    }
+  }
 
   async function handleBuy(credits: 10 | 25 | 50) {
     setLoading(credits);
@@ -150,6 +169,19 @@ function BuyCreditsContent() {
             </div>
           ))}
         </div>
+
+        {isDev && (
+          <div className="mb-6 border-2 border-dashed border-orange-300 rounded-xl p-4 text-center bg-orange-50">
+            <p className="text-xs font-bold text-orange-600 uppercase tracking-widest mb-2">⚡ Dev Mode — Skip Payment</p>
+            <button
+              onClick={handleDevBypass}
+              disabled={bypassing}
+              className="bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold px-6 py-2 rounded-lg transition-colors disabled:opacity-50"
+            >
+              {bypassing ? "Adding credits…" : "Add 10 Test Credits & Continue"}
+            </button>
+          </div>
+        )}
 
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 text-center mb-6">
