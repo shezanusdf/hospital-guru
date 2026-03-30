@@ -3,7 +3,7 @@ import { buildInquiryNotificationEmail, buildNetworkLeadEmail, buildContactRevea
 import type { NetworkContact } from "@/data/network";
 
 // ─── Notification target ──────────────────────────────────────────────────────
-const NOTIFY_EMAIL = "shezansiddique88@gmail.com";
+const NOTIFY_EMAIL = "shezansiddiqui7@gmail.com";
 
 // ─── Transporter (Gmail SMTP — uses App Password) ─────────────────────────────
 // Setup: Google Account → Security → 2-Step Verification → App Passwords
