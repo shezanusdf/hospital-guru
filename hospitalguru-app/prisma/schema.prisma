@@ -23,8 +23,12 @@ model Inquiry {
   urgency        String   @default("routine")
   source         String   @default("web_form")
   status         String   @default("new")
-  internalNotes  String?
-  chatContext    String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  internalNotes     String?
+  chatContext       String?
+  leadToken         String?  @unique
+  networkEmailedAt  DateTime?
+  acceptedByEmail   String?
+  acceptedAt        DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
